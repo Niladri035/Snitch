@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import authRouter from "./routes/auth.routes.js";
@@ -14,10 +15,14 @@ import orderRouter from "./routes/order.routes.js";
 
 const app = express();
 
-// app.use(cors({
-//     origin: "http://localhost:5173",
-//     credentials: true
-// }));
+app.use(cors({
+    origin: (origin, callback) => {
+        // Dynamically allow any requesting origin with credentials for ease of hosting on Render/Netlify/Vercel
+        if (!origin) return callback(null, true);
+        callback(null, true);
+    },
+    credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

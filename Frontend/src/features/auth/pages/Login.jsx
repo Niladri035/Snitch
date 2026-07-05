@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth } from '../hook/useAuth'
 import { useNavigate } from 'react-router'
+import { getBackendUrl } from '../../../services/api.js'
 
 /* ── tiny SVG icons ── */
 const MailIcon = () => (
@@ -269,7 +270,7 @@ export default function Login() {
 
               {/* Google Auth Button */}
               <a
-                href="/api/auth/google"
+                href={getBackendUrl('/api/auth/google')}
                 className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl text-xs font-bold tracking-widest uppercase active:scale-[0.98] transition-all duration-150 backdrop-blur-sm"
                 style={{ background: 'rgba(255,255,255,0.50)', border: '1px solid rgba(255,255,255,0.75)', color: '#1e5c58' }}
               >
