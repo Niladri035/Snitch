@@ -83,7 +83,7 @@ export const login = async (req, res) => {
 export const googleAuth = async (req, res) => {
     try {
         if (!req.user) {
-            return res.redirect("http://localhost:5173/login?error=google_auth_failed");
+            return res.redirect(`${config.FRONTEND_URL}/login?error=google_auth_failed`);
         }
 
         const email = req.user.emails[0].value;
@@ -111,9 +111,9 @@ export const googleAuth = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
-        res.redirect("http://localhost:5173/");
+        res.redirect(`${config.FRONTEND_URL}/`);
     } catch (error) {
         console.error("Google Auth controller error:", error);
-        res.redirect("http://localhost:5173/login?error=server_error");
+        res.redirect(`${config.FRONTEND_URL}/login?error=server_error`);
     }
 }

@@ -56,8 +56,8 @@ export const config ={
     MISTRAL_API_KEY: process.env.MISTRAL_API_KEY || null,
     COHERE_API_KEY:  process.env.COHERE_API_KEY  || null,
     RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
-    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET
-
+    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
+    FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173"
 }
 
 export default config;
