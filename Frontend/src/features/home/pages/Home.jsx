@@ -657,6 +657,16 @@ export default function Home() {
     return () => ScrollTrigger.getAll().forEach(t => t.kill())
   }, [isLoggedIn, dispatch, fetchUserWishlist])
 
+  /* Refresh ScrollTrigger once loading is complete and DOM height updates */
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => {
+        ScrollTrigger.refresh()
+      }, 250)
+      return () => clearTimeout(timer)
+    }
+  }, [loading])
+
   /* filter products based on search queries, categories, and feed mode */
   const filteredProducts = (() => {
     let baseList = allProducts;
@@ -994,10 +1004,13 @@ export default function Home() {
 function CollectionsSection({ onSelectCollection }) {
   const deckRef = useRef(null)
   useEffect(() => {
-    gsap.fromTo('.coll-card', { y: 40, opacity: 0, scale: 0.96 }, {
-      y: 0, opacity: 1, scale: 1, stagger: 0.1, duration: 0.7, ease: 'power3.out',
-      scrollTrigger: { trigger: deckRef.current, start: 'top 82%', once: true }
-    })
+    const ctx = gsap.context(() => {
+      gsap.fromTo('.coll-card', { y: 40, opacity: 0, scale: 0.96 }, {
+        y: 0, opacity: 1, scale: 1, stagger: 0.1, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: deckRef.current, start: 'top 82%', once: true }
+      })
+    }, deckRef)
+    return () => ctx.revert()
   }, [])
 
   const collections = [
