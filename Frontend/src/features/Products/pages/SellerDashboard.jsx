@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from
 import { useNavigate } from 'react-router'
 import { useSelector } from 'react-redux'
 import { useProduct } from '../hook/useProduct.js'
+import { useAuth } from '../../auth/hook/useAuth.js'
 import { gsap } from 'gsap'
 import { aiDetectColor } from '../services/ai.api.js'
 
@@ -934,6 +935,7 @@ export default function SellerDashboard() {
 
   const navigate = useNavigate()
   const user = useSelector(state => state.auth.user)
+  const { handleLogout } = useAuth()
   const { handleGetSellerProduct, handleDeleteProduct, handleUpdateInventory, sellerProduct } = useProduct()
 
   /* Derived seller display name from register fullname */
@@ -1158,6 +1160,13 @@ export default function SellerDashboard() {
                 <PlusIcon />
                 <span>Add Product</span>
               </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-bold tracking-widest uppercase text-red-600 transition-all duration-150 hover:bg-red-50/50"
+                style={{ ...exo, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)' }}
+              >
+                Logout
+              </button>
             </div>
 
             {/* Mobile right — hamburger only */}
@@ -1210,6 +1219,13 @@ export default function SellerDashboard() {
                 style={{ ...exo, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#3d7e7a' }}
               >
                 🏠 Back to Home
+              </button>
+              <button
+                onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                className="text-left px-3 py-2.5 rounded-xl text-[11px] font-bold tracking-widest uppercase text-red-600 active:scale-[0.97]"
+                style={{ ...saira, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)' }}
+              >
+                Logout
               </button>
             </div>
           )}

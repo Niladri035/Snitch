@@ -7,6 +7,7 @@ import { useProduct } from '../../Products/hook/useProduct'
 import ProductDetailOverlay from '../../Products/pages/ProductDetailOverlay'
 import CartDrawer from '../../Products/pages/CartDrawer'
 import { getCartThunk } from '../../Products/state/cart.slice.js'
+import { useAuth } from '../../auth/hook/useAuth'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -616,6 +617,7 @@ export default function Home() {
   const user       = useSelector(state => state.auth.user)
   const isSeller   = user?.role === 'seller'
   const isLoggedIn = !!user
+  const { handleLogout } = useAuth()
 
   const { handleGetAllProduct, products: hookProducts, loading: hookLoading } = useProduct()
   const storeProducts = useSelector(state => state.product.products) || []
@@ -807,6 +809,11 @@ export default function Home() {
                       👋 {user.fullname?.split(' ')[0] || 'Welcome'}
                     </span>
                   )}
+                  <button onClick={handleLogout}
+                    className="px-3 py-2 rounded-xl text-[10px] font-bold tracking-widest uppercase backdrop-blur-sm text-red-600 transition-all hover:bg-red-50"
+                    style={{ ...saira, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)' }}>
+                    Logout
+                  </button>
                 </>
               ) : (
                 <>
@@ -894,10 +901,17 @@ export default function Home() {
               )}
               <div className="border-t pt-3 flex gap-2" style={{ borderColor: 'rgba(255,255,255,0.55)' }}>
                 {isLoggedIn ? (
-                  <span className="flex-1 text-center py-2 rounded-xl text-[11px] font-semibold tracking-widest uppercase"
-                    style={{ ...exo, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#3d7e7a' }}>
-                    👋 {user?.fullname?.split(' ')[0] || 'Welcome'}
-                  </span>
+                  <>
+                    <span className="flex-1 text-center py-2 rounded-xl text-[11px] font-semibold tracking-widest uppercase"
+                      style={{ ...exo, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#3d7e7a' }}>
+                      👋 {user?.fullname?.split(' ')[0] || 'Welcome'}
+                    </span>
+                    <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                      className="px-4 py-2 rounded-xl text-[11px] font-bold tracking-widest uppercase text-red-600 active:scale-[0.97]"
+                      style={{ ...saira, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)' }}>
+                      Logout
+                    </button>
+                  </>
                 ) : (
                   <>
                     <button onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}

@@ -145,3 +145,17 @@ export const getMe = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+export const logout = async (req, res) => {
+    try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        });
+        return res.status(200).json({ success: true, message: "Logged out successfully" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}

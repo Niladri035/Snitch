@@ -7,6 +7,7 @@ import { TextPlugin } from 'gsap/TextPlugin'
 import ProductDetailOverlay from '../../Products/pages/ProductDetailOverlay'
 import CartDrawer from '../../Products/pages/CartDrawer'
 import { getCartThunk } from '../../Products/state/cart.slice.js'
+import { useAuth } from '../../auth/hook/useAuth'
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin)
 
@@ -203,6 +204,7 @@ export default function CollectionsPage() {
   const user       = useSelector(s => s.auth.user)
   const cartItems  = useSelector(s => s.cart.items) || []
   const isLoggedIn = !!user
+  const { handleLogout } = useAuth()
 
   const [products,      setProducts]      = useState([])
   const [loading,       setLoading]       = useState(true)
@@ -555,6 +557,12 @@ export default function CollectionsPage() {
                   <span style={{ position: 'absolute', top: '-1px', right: '-1px', width: '16px', height: '16px', borderRadius: '50%', background: '#5B611D', color: '#fff', fontSize: '8px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cartCount}</span>
                 )}
               </button>
+              {isLoggedIn && (
+                <button onClick={handleLogout}
+                  style={{ ...spaceGrotesk, border: 'none', background: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 700, color: '#dc2626', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  Logout
+                </button>
+              )}
             </div>
 
             {/* Mobile right: Cart + Hamburger */}
@@ -608,6 +616,11 @@ export default function CollectionsPage() {
               <button className="coll-mobile-nav-btn" onClick={() => { navigate(isLoggedIn ? '/seller/dashboard' : '/login'); setMobileMenuOpen(false); }}>
                 {isLoggedIn ? `👋 ${user?.fullname?.split(' ')[0] || 'Profile'}` : 'Sign In'}
               </button>
+              {isLoggedIn && (
+                <button className="coll-mobile-nav-btn" style={{ color: '#dc2626' }} onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
+                  Logout
+                </button>
+              )}
             </div>
           )}
         </header>

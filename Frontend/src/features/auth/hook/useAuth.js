@@ -1,5 +1,5 @@
 import { setError,setLoading,setUser } from "../state/auth.slice";
-import { register, login } from "../services/auth.api";
+import { register, login, logout } from "../services/auth.api";
 import { useDispatch } from "react-redux";
 
 export const useAuth=()=>{
@@ -18,5 +18,15 @@ export const useAuth=()=>{
         const data = await login(email,password);
         dispatch(setUser(data.user));
     }
-    return {handleRegister,handleLogin}
+
+    async function handleLogout(){
+        try {
+            await logout();
+        } catch (err) {
+            console.warn("Logout request failed, clearing local user state anyway:", err);
+        }
+        dispatch(setUser(null));
+    }
+
+    return {handleRegister,handleLogin,handleLogout}
 }
