@@ -80,12 +80,15 @@ export const createOrder = async (req, res) => {
 
 /* ─────────────────────────────────────────────────────────────
    GET /api/orders/seller
-   Seller fetches ALL orders (any seller can view all orders).
+   Seller fetches only orders that contain their own products.
 ───────────────────────────────────────────────────────────── */
 export const getSellerOrders = async (req, res) => {
   try {
+    const sellerId = req.user.id;
+
+    // Only return orders that have at least one item belonging to this seller
     const orders = await orderModel
-      .find({})
+      .find({ 'items.seller': sellerId })
       .populate({ path: 'buyer', select: 'fullname email contact' })
       .populate({ path: 'items.product', select: 'title images price' })
       .populate({ path: 'items.seller', select: 'fullname email' })
@@ -93,12 +96,21 @@ export const getSellerOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    return res.status(200).json({ success: true, orders });
+    // Filter each order's items to only show THIS seller's items
+    const filteredOrders = orders.map(order => ({
+      ...order,
+      items: order.items.filter(item =>
+        item.seller && item.seller._id?.toString() === sellerId.toString()
+      ),
+    }));
+
+    return res.status(200).json({ success: true, orders: filteredOrders });
   } catch (err) {
     console.error('getSellerOrders error:', err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 /* ─────────────────────────────────────────────────────────────
    GET /api/orders/buyer

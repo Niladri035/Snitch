@@ -64,11 +64,7 @@ export const router = createBrowserRouter([
     },
     {
         path: "/order-success",
-        element: (
-            <SellerRoute>
-                <OrderSuccessPage />
-            </SellerRoute>
-        )
+        element: <OrderSuccessPage />
     },
     {
         path: "/my-orders",
