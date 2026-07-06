@@ -434,13 +434,13 @@ export default function ProductDetailOverlay({ product: propProduct, fromRect, o
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-[150] flex"
+      className="fixed inset-0 z-[150] flex flex-col md:flex-row overflow-y-auto md:overflow-hidden"
       style={{ background: '#E3F1F0' }}
     >
-      {/* ── LEFT — Hero image (55%) ── */}
+      {/* ── LEFT — Hero image (55% on desktop, 60vh on mobile) ── */}
       <div
         ref={heroWrapRef}
-        className="relative w-[55%] flex-shrink-0 h-screen overflow-hidden group"
+        className="relative w-full md:w-[55%] flex-shrink-0 h-[60vh] md:h-screen overflow-hidden group"
       >
         {/* Animated hero — reveals on color change */}
         <HeroImage
@@ -451,9 +451,13 @@ export default function ProductDetailOverlay({ product: propProduct, fromRect, o
           title={galleryImages.length > 1 ? 'Click to see next image' : undefined}
         />
 
-        {/* Gradient right edge bleed */}
-        <div className="absolute inset-0 pointer-events-none z-10"
+        {/* Gradient right edge bleed (desktop only) */}
+        <div className="hidden md:block absolute inset-0 pointer-events-none z-10"
           style={{ background: 'linear-gradient(to right, transparent 65%, #E3F1F0 100%)' }} />
+
+        {/* Gradient bottom edge bleed (mobile only) */}
+        <div className="block md:hidden absolute inset-0 pointer-events-none z-10"
+          style={{ background: 'linear-gradient(to top, transparent 65%, #E3F1F0 100%)' }} />
 
         {/* Gradient bottom (for thumbstrip) */}
         <div className="absolute inset-x-0 bottom-0 pointer-events-none h-32 z-10"
@@ -468,7 +472,7 @@ export default function ProductDetailOverlay({ product: propProduct, fromRect, o
             <button
               onClick={prevImg}
               className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center
-                         opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 active:scale-95"
+                         opacity-80 md:opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 active:scale-95"
               style={{ background: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)', backdropFilter: 'blur(8px)', color: '#0d2b29' }}
               title="Previous image"
             >
@@ -480,7 +484,7 @@ export default function ProductDetailOverlay({ product: propProduct, fromRect, o
             <button
               onClick={nextImg}
               className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center
-                         opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 active:scale-95"
+                         opacity-80 md:opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 active:scale-95"
               style={{ background: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)', backdropFilter: 'blur(8px)', color: '#0d2b29' }}
               title="Next image"
             >
@@ -535,7 +539,7 @@ export default function ProductDetailOverlay({ product: propProduct, fromRect, o
       <button
         ref={closeRef}
         onClick={handleClose}
-        className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-150 hover:scale-110"
+        className="absolute top-4 left-4 z-50 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-150 hover:scale-110 shadow-sm"
         style={{ background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.75)', color: '#0d2b29', backdropFilter: 'blur(8px)' }}
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -543,10 +547,10 @@ export default function ProductDetailOverlay({ product: propProduct, fromRect, o
         </svg>
       </button>
 
-      {/* ── RIGHT — Product details (45%) ── */}
+      {/* ── RIGHT — Product details (45% on desktop, full-width scrollable on mobile) ── */}
       <div
         ref={rightRef}
-        className="relative flex-1 h-screen flex flex-col px-6 lg:px-10 overflow-hidden"
+        className="relative w-full md:flex-1 min-h-[40vh] md:h-screen flex flex-col px-4 sm:px-6 lg:px-10 md:overflow-hidden pb-8 md:pb-0"
       >
         {/* ─ Decorative SVG background ─ */}
         <svg className="absolute bottom-4 right-4 opacity-[0.06] pointer-events-none" width="90" height="90" viewBox="0 0 140 140" fill="none" aria-hidden>
