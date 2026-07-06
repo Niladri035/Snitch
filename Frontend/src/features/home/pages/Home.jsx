@@ -302,8 +302,8 @@ function HeroSection({ isLoggedIn, isSeller, user, navigate }) {
       <div className="float-orb-b absolute bottom-[20%] left-[5%] w-44 h-44 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(245,197,24,0.11) 0%, transparent 70%)' }} />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-20 w-full">
-        <div className="grid lg:grid-cols-[1fr_420px] gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-20 w-full">
+        <div className="grid lg:grid-cols-[1fr_420px] gap-10 lg:gap-16 items-center">
 
           {/* LEFT */}
           <div className="flex flex-col gap-8">
@@ -628,6 +628,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
   const [feedMode, setFeedMode]       = useState('all') // 'all' | 'high-demand' | 'wishlist'
   const [wishlistItems, setWishlistItems] = useState([])
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const cartItems = useSelector(state => state.cart.items) || []
 
@@ -739,10 +740,19 @@ export default function Home() {
 
         {/* ── NAV ── */}
         <header className="sticky top-0 z-50 backdrop-blur-md"
-          style={{ background: 'rgba(227,241,240,0.88)', borderBottom: '1px solid rgba(255,255,255,0.55)' }}>
-          <div className="max-w-7xl mx-auto px-6 lg:px-12 h-14 flex items-center justify-between">
-            <span className="text-lg font-black tracking-[0.35em] uppercase" style={{ ...saira, color: '#b8860b' }}>SNITCH</span>
+          style={{ background: 'rgba(227,241,240,0.92)', borderBottom: '1px solid rgba(255,255,255,0.55)' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-14 flex items-center justify-between">
 
+            {/* Brand — clicking takes you home */}
+            <button
+              onClick={() => navigate('/')}
+              className="text-lg font-black tracking-[0.35em] uppercase hover:opacity-80 transition-opacity"
+              style={{ ...saira, color: '#b8860b' }}
+            >
+              SNITCH
+            </button>
+
+            {/* Desktop nav links */}
             <nav className="hidden md:flex items-center gap-6">
               <a href="#products" className="text-[11px] font-semibold tracking-widest uppercase hover:opacity-80 transition-opacity" style={{ ...exo, color: '#3d7e7a' }}>
                 Catalog
@@ -766,10 +776,10 @@ export default function Home() {
               )}
             </nav>
 
-            <div className="flex items-center gap-2.5">
+            {/* Desktop right side */}
+            <div className="hidden md:flex items-center gap-2.5">
               {isLoggedIn ? (
                 <>
-                  {/* Cart Button */}
                   {!isSeller && (
                     <button
                       onClick={() => setCartOpen(true)}
@@ -779,10 +789,7 @@ export default function Home() {
                     >
                       <BagIcon />
                       {cartItems.length > 0 && (
-                        <span
-                          className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black text-white"
-                          style={{ background: '#b8860b' }}
-                        >
+                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black text-white" style={{ background: '#b8860b' }}>
                           {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
                         </span>
                       )}
@@ -816,7 +823,98 @@ export default function Home() {
                 </>
               )}
             </div>
+
+            {/* Mobile right — cart + hamburger */}
+            <div className="flex md:hidden items-center gap-2">
+              {isLoggedIn && !isSeller && (
+                <button
+                  onClick={() => setCartOpen(true)}
+                  className="relative p-2.5 rounded-xl flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#1e5c58' }}
+                >
+                  <BagIcon />
+                  {cartItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black text-white" style={{ background: '#b8860b' }}>
+                      {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                    </span>
+                  )}
+                </button>
+              )}
+              {/* Hamburger */}
+              <button
+                onClick={() => setMobileMenuOpen(prev => !prev)}
+                className="p-2 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#1e5c58' }}
+              >
+                {mobileMenuOpen ? (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* Mobile dropdown menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t px-4 py-4 flex flex-col gap-3"
+              style={{ background: 'rgba(227,241,240,0.97)', borderColor: 'rgba(255,255,255,0.55)' }}>
+              <a href="#products" onClick={() => setMobileMenuOpen(false)}
+                className="text-[12px] font-bold tracking-widest uppercase py-2 px-3 rounded-xl"
+                style={{ ...exo, color: '#3d7e7a', background: 'rgba(255,255,255,0.45)' }}>
+                Catalog
+              </a>
+              <button onClick={() => { navigate('/collections'); setMobileMenuOpen(false); }}
+                className="text-left text-[12px] font-bold tracking-widest uppercase py-2 px-3 rounded-xl cursor-pointer"
+                style={{ ...exo, color: '#3d7e7a', background: 'rgba(255,255,255,0.45)' }}>
+                Collections
+              </button>
+              <button onClick={() => { isLoggedIn ? navigate('/wishlist') : navigate('/login'); setMobileMenuOpen(false); }}
+                className="text-left text-[12px] font-bold tracking-widest uppercase py-2 px-3 rounded-xl cursor-pointer"
+                style={{ ...exo, color: '#3d7e7a', background: 'rgba(255,255,255,0.45)' }}>
+                Wishlist
+              </button>
+              {isLoggedIn && (
+                <button onClick={() => { navigate('/my-orders'); setMobileMenuOpen(false); }}
+                  className="text-left text-[12px] font-bold tracking-widest uppercase py-2 px-3 rounded-xl cursor-pointer"
+                  style={{ ...exo, color: '#3d7e7a', background: 'rgba(255,255,255,0.45)' }}>
+                  My Orders
+                </button>
+              )}
+              {isSeller && (
+                <button onClick={() => { navigate('/seller/dashboard'); setMobileMenuOpen(false); }}
+                  className="text-left text-[12px] font-bold tracking-widest uppercase py-2 px-3 rounded-xl cursor-pointer"
+                  style={{ ...exo, color: '#3d7e7a', background: 'rgba(255,255,255,0.45)' }}>
+                  Dashboard
+                </button>
+              )}
+              <div className="border-t pt-3 flex gap-2" style={{ borderColor: 'rgba(255,255,255,0.55)' }}>
+                {isLoggedIn ? (
+                  <span className="flex-1 text-center py-2 rounded-xl text-[11px] font-semibold tracking-widest uppercase"
+                    style={{ ...exo, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#3d7e7a' }}>
+                    👋 {user?.fullname?.split(' ')[0] || 'Welcome'}
+                  </span>
+                ) : (
+                  <>
+                    <button onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}
+                      className="flex-1 py-2 rounded-xl text-[11px] font-bold tracking-widest uppercase"
+                      style={{ ...saira, background: 'rgba(255,255,255,0.42)', border: '1px solid rgba(255,255,255,0.68)', color: '#1e5c58' }}>
+                      Sign In
+                    </button>
+                    <button onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}
+                      className="flex-1 py-2 rounded-xl text-[11px] font-bold tracking-widest uppercase text-[#0d2b29]"
+                      style={{ ...saira, background: 'linear-gradient(135deg,#F5C518 0%,#d4a800 100%)' }}>
+                      Get Started
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </header>
 
         <MarqueeStrip />

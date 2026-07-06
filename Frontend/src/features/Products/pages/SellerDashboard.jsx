@@ -945,6 +945,7 @@ export default function SellerDashboard() {
   const [selected, setSelected]       = useState(null)   // { product, fromRect }
   const [inventoryProduct, setInventoryProduct] = useState(null) // product being inventory-managed
   const [searchQuery, setSearchQuery] = useState('')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const filteredProducts = (sellerProduct || []).filter(p => {
     const q = searchQuery.trim().toLowerCase()
@@ -1098,30 +1099,48 @@ export default function SellerDashboard() {
         <header
           ref={headerRef}
           className="relative z-40 flex-shrink-0 border-b backdrop-blur-md"
-          style={{ background: 'rgba(227,241,240,0.88)', borderColor: 'rgba(255,255,255,0.60)' }}
+          style={{ background: 'rgba(227,241,240,0.92)', borderColor: 'rgba(255,255,255,0.60)' }}
         >
-          <div className="max-w-7xl mx-auto px-6 lg:px-12 h-14 flex items-center justify-between">
-            {/* Left — brand */}
-            <div className="flex items-center gap-4">
-              <span className="text-base font-black tracking-[0.35em] uppercase" style={{ ...saira, color: '#b8860b' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-14 flex items-center justify-between">
+            {/* Left — brand (clickable → home) */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate('/')}
+                className="text-base font-black tracking-[0.35em] uppercase hover:opacity-80 transition-opacity"
+                style={{ ...saira, color: '#b8860b' }}
+              >
                 SNITCH
-              </span>
+              </button>
               <span className="hidden sm:block" style={{ color: '#b0cccb' }}>·</span>
               <span className="hidden sm:block text-[10px] font-semibold tracking-[0.2em] uppercase" style={{ ...exo, color: '#3d7e7a' }}>
                 Seller Dashboard
               </span>
             </div>
-            {/* Right — greeting + add button */}
-            <div className="flex items-center gap-3">
+
+            {/* Desktop right — greeting + buttons */}
+            <div className="hidden sm:flex items-center gap-3">
               {sellerName && (
                 <div
-                  className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-sm"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-sm"
                   style={{ background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)' }}
                 >
                   <span className="text-[9px] tracking-widest uppercase" style={{ ...exo, color: '#6aaca8' }}>Hello,</span>
                   <span className="text-[11px] font-bold" style={{ ...saira, color: '#0d2b29' }}>{sellerName}</span>
                 </div>
               )}
+
+              {/* ← Back to Home */}
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-bold tracking-widest uppercase transition-all duration-150 hover:opacity-80"
+                style={{ ...exo, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#3d7e7a' }}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Home
+              </button>
+
               <button
                 onClick={() => navigate('/order-success')}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold tracking-widest uppercase text-white transition-all duration-150"
@@ -1137,14 +1156,67 @@ export default function SellerDashboard() {
                 style={{ ...saira, background: 'linear-gradient(135deg,#F5C518 0%,#d4a800 100%)', boxShadow: '0 2px 12px rgba(245,197,24,0.25)' }}
               >
                 <PlusIcon />
-                <span className="hidden sm:block">Add Product</span>
+                <span>Add Product</span>
+              </button>
+            </div>
+
+            {/* Mobile right — hamburger only */}
+            <div className="flex sm:hidden items-center gap-2">
+              <button
+                onClick={() => navigate('/products/create')}
+                className="flex items-center justify-center w-9 h-9 rounded-xl text-[#0d2b29] transition-all"
+                style={{ background: 'linear-gradient(135deg,#F5C518 0%,#d4a800 100%)' }}
+              >
+                <PlusIcon />
+              </button>
+              <button
+                onClick={() => setMobileMenuOpen(prev => !prev)}
+                className="flex items-center justify-center w-9 h-9 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#1e5c58' }}
+              >
+                {mobileMenuOpen ? (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
+
+          {/* Mobile dropdown */}
+          {mobileMenuOpen && (
+            <div className="sm:hidden border-t px-4 py-3 flex flex-col gap-2"
+              style={{ background: 'rgba(227,241,240,0.97)', borderColor: 'rgba(255,255,255,0.55)' }}
+            >
+              {sellerName && (
+                <div className="px-3 py-2 rounded-xl text-[11px] font-bold" style={{ ...saira, color: '#0d2b29', background: 'rgba(255,255,255,0.45)' }}>
+                  👋 Hello, {sellerName}
+                </div>
+              )}
+              <button
+                onClick={() => { navigate('/order-success'); setMobileMenuOpen(false); }}
+                className="text-left px-3 py-2.5 rounded-xl text-[11px] font-bold tracking-widest uppercase text-white"
+                style={{ ...saira, background: 'linear-gradient(135deg,#0d2b29 0%,#1e5c58 100%)' }}
+              >
+                📦 View Orders
+              </button>
+              <button
+                onClick={() => { navigate('/'); setMobileMenuOpen(false); }}
+                className="text-left px-3 py-2.5 rounded-xl text-[11px] font-bold tracking-widest uppercase"
+                style={{ ...exo, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.70)', color: '#3d7e7a' }}
+              >
+                🏠 Back to Home
+              </button>
+            </div>
+          )}
         </header>
 
         {/* ── MAIN BODY (flex-1, no scroll on wrapper) ── */}
-        <div className="relative z-10 flex-1 min-h-0 flex flex-col max-w-7xl mx-auto w-full px-6 lg:px-12 py-6 gap-4">
+        <div className="relative z-10 flex-1 min-h-0 flex flex-col max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-12 py-4 sm:py-6 gap-4">
 
           {/* ── STATS ROW ── */}
           <div ref={statsRef} className="flex-shrink-0 grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1166,20 +1238,20 @@ export default function SellerDashboard() {
           </div>
 
           {/* ── HEADING + TOOLBAR ── */}
-          <div ref={toolbarRef} className="flex-shrink-0 flex items-center justify-between gap-4">
+          <div ref={toolbarRef} className="flex-shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <p className="text-[9px] font-bold tracking-[0.28em] uppercase" style={{ ...exo, color: '#b8860b' }}>
                 MY CATALOG
               </p>
-              <h1 className="text-2xl font-black leading-tight" style={{ ...saira, color: '#0d2b29' }}>
+              <h1 className="text-xl sm:text-2xl font-black leading-tight" style={{ ...saira, color: '#0d2b29' }}>
                 Your <span style={{ color: '#b8860b' }}>Products</span>
               </h1>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Search Bar */}
               {!fetchLoading && sellerProduct.length > 0 && (
-                <div className="relative flex items-center w-48 sm:w-60">
+                <div className="relative flex items-center flex-1 min-w-[140px] sm:w-60">
                   <span className="absolute left-3 text-neutral-400 text-[10px]">🔍</span>
                   <input
                     type="text"

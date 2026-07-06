@@ -216,6 +216,7 @@ export default function CollectionsPage() {
   const [wishlistIds,   setWishlistIds]   = useState([])
   const [email,         setEmail]         = useState('')
   const [subscribed,    setSubsubscribed] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const tabsRef    = useRef(null)
   const heroRef    = useRef(null)
@@ -398,21 +399,93 @@ export default function CollectionsPage() {
           font-weight: 600;
           transition: color 0.2s ease;
         }
-        .nav-link-redesign:hover {
-          color: #5B611D;
-        }
-        .nav-link-redesign.active {
-          color: #5B611D;
-        }
+        .nav-link-redesign:hover { color: #5B611D; }
+        .nav-link-redesign.active { color: #5B611D; }
         .nav-link-redesign.active::after {
           content: '';
           position: absolute;
-          left: 0;
-          bottom: -4px;
-          width: 100%;
-          height: 2px;
+          left: 0; bottom: -4px;
+          width: 100%; height: 2px;
           background-color: #5B611D;
           border-radius: 2px;
+        }
+
+        /* Desktop nav links hidden on mobile */
+        .coll-nav-desktop { display: none; }
+        .coll-nav-mobile-btn { display: flex; }
+        @media (min-width: 768px) {
+          .coll-nav-desktop { display: flex; }
+          .coll-nav-mobile-btn { display: none; }
+        }
+
+        /* Responsive product grid */
+        .coll-product-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+        @media (min-width: 640px) {
+          .coll-product-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        }
+        @media (min-width: 900px) {
+          .coll-product-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+        }
+
+        /* Newsletter form responsive */
+        .coll-newsletter-form {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+          max-width: 420px;
+          align-items: stretch;
+        }
+        @media (min-width: 500px) {
+          .coll-newsletter-form { flex-direction: row; justify-content: center; }
+        }
+
+        /* Hero banner responsive height */
+        .coll-hero-banner {
+          min-height: 280px;
+        }
+        @media (min-width: 640px) {
+          .coll-hero-banner { min-height: 380px; }
+        }
+        @media (min-width: 1024px) {
+          .coll-hero-banner { min-height: 440px; }
+        }
+
+        /* Main browser section padding */
+        .coll-browser-section {
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 24px 16px 60px;
+        }
+        @media (min-width: 640px) {
+          .coll-browser-section { padding: 40px 24px 80px; }
+        }
+
+        /* Mobile menu dropdown */
+        .coll-mobile-menu {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          padding: 12px 16px 16px;
+          border-top: 1px solid rgba(255,255,255,0.5);
+          background: rgba(230,245,242,0.97);
+        }
+        .coll-mobile-nav-btn {
+          text-align: left;
+          padding: 10px 14px;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.45);
+          border: 1px solid rgba(255,255,255,0.6);
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #52786F;
+          cursor: pointer;
         }
       `}</style>
 
@@ -433,12 +506,12 @@ export default function CollectionsPage() {
         {/* ═══ NAV ═══ */}
         <header ref={navRef} style={{
           position: 'sticky', top: 0, zIndex: 100,
-          background: 'rgba(230,245,242,0.88)',
+          background: 'rgba(230,245,242,0.92)',
           borderBottom: '1px solid rgba(255,255,255,0.7)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
         }}>
-          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 16px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
             {/* Logo */}
             <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => navigate('/')}>
@@ -447,8 +520,8 @@ export default function CollectionsPage() {
               </span>
             </div>
 
-            {/* Nav links */}
-            <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+            {/* Desktop Nav links */}
+            <nav className="coll-nav-desktop" style={{ alignItems: 'center', gap: '32px' }}>
               <button onClick={() => navigate('/')} className="nav-link-redesign" style={{ ...spaceGrotesk, border: 'none', background: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Shop</button>
               <button onClick={() => navigate('/collections')} className="nav-link-redesign active" style={{ ...spaceGrotesk, border: 'none', background: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Collections</button>
               {isLoggedIn && (
@@ -457,13 +530,10 @@ export default function CollectionsPage() {
               {user?.role === 'seller' && (
                 <button onClick={() => navigate('/seller/dashboard')} className="nav-link-redesign" style={{ ...spaceGrotesk, border: 'none', background: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Dashboard</button>
               )}
-              <button onClick={() => navigate('/')} className="nav-link-redesign" style={{ ...spaceGrotesk, border: 'none', background: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Archive</button>
-              <button onClick={() => navigate('/')} className="nav-link-redesign" style={{ ...spaceGrotesk, border: 'none', background: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>About</button>
             </nav>
 
-            {/* Search Input, Profile, Cart */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              {/* Search Block */}
+            {/* Desktop right: Search + Profile + Cart */}
+            <div className="coll-nav-desktop" style={{ alignItems: 'center', gap: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', background: '#D9EDE9', border: '1px solid #C5DDD8', borderRadius: '999px', padding: '6px 14px', gap: '8px' }}>
                 <span style={{ color: '#52786F', display: 'flex', alignItems: 'center' }}><SearchIcon /></span>
                 <input
@@ -471,53 +541,83 @@ export default function CollectionsPage() {
                   placeholder="SEARCH PIECES"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{
-                    ...spaceGrotesk, background: 'none', border: 'none', outline: 'none',
-                    fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', color: '#0d2b29',
-                    width: '120px', textTransform: 'uppercase'
-                  }}
+                  style={{ ...spaceGrotesk, background: 'none', border: 'none', outline: 'none', fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', color: '#0d2b29', width: '120px', textTransform: 'uppercase' }}
                 />
               </div>
-
-              {/* Profile */}
-              <button
-                onClick={() => navigate(isLoggedIn ? '/seller/dashboard' : '/login')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#52786F', padding: '6px', display: 'flex', alignItems: 'center' }}
-                title={isLoggedIn ? 'Seller Dashboard' : 'Login / Register'}
-              >
+              <button onClick={() => navigate(isLoggedIn ? '/seller/dashboard' : '/login')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#52786F', padding: '6px', display: 'flex', alignItems: 'center' }}>
                 <UserIcon />
               </button>
-
-              {/* Cart */}
-              <button
-                onClick={() => setCartOpen(true)}
-                style={{
-                  position: 'relative', padding: '6px', background: 'none', border: 'none',
-                  cursor: 'pointer', color: '#52786F', display: 'flex', alignItems: 'center'
-                }}
-                title="Your bag"
-              >
+              <button onClick={() => setCartOpen(true)}
+                style={{ position: 'relative', padding: '6px', background: 'none', border: 'none', cursor: 'pointer', color: '#52786F', display: 'flex', alignItems: 'center' }}>
                 <BagIcon />
                 {cartCount > 0 && (
-                  <span style={{
-                    position: 'absolute', top: '-1px', right: '-1px',
-                    width: '16px', height: '16px', borderRadius: '50%',
-                    background: '#5B611D', color: '#fff', fontSize: '8px', fontWeight: 700,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 6px rgba(91,97,29,0.3)',
-                  }}>{cartCount}</span>
+                  <span style={{ position: 'absolute', top: '-1px', right: '-1px', width: '16px', height: '16px', borderRadius: '50%', background: '#5B611D', color: '#fff', fontSize: '8px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cartCount}</span>
+                )}
+              </button>
+            </div>
+
+            {/* Mobile right: Cart + Hamburger */}
+            <div className="coll-nav-mobile-btn" style={{ alignItems: 'center', gap: '8px' }}>
+              <button onClick={() => setCartOpen(true)}
+                style={{ position: 'relative', padding: '8px', background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: '10px', cursor: 'pointer', color: '#52786F', display: 'flex', alignItems: 'center' }}>
+                <BagIcon />
+                {cartCount > 0 && (
+                  <span style={{ position: 'absolute', top: '-2px', right: '-2px', width: '16px', height: '16px', borderRadius: '50%', background: '#5B611D', color: '#fff', fontSize: '8px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cartCount}</span>
+                )}
+              </button>
+              <button
+                onClick={() => setMobileMenuOpen(prev => !prev)}
+                style={{ padding: '8px', background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: '10px', cursor: 'pointer', color: '#52786F', display: 'flex', alignItems: 'center' }}
+              >
+                {mobileMenuOpen ? (
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
                 )}
               </button>
             </div>
           </div>
+
+          {/* Mobile dropdown menu */}
+          {mobileMenuOpen && (
+            <div className="coll-mobile-menu" style={{ fontFamily: spaceGrotesk.fontFamily }}>
+              {/* Mobile search */}
+              <div style={{ display: 'flex', alignItems: 'center', background: '#D9EDE9', border: '1px solid #C5DDD8', borderRadius: '999px', padding: '8px 16px', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ color: '#52786F', display: 'flex', alignItems: 'center' }}><SearchIcon /></span>
+                <input
+                  type="text"
+                  placeholder="SEARCH PIECES"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ ...spaceGrotesk, background: 'none', border: 'none', outline: 'none', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: '#0d2b29', width: '100%', textTransform: 'uppercase' }}
+                />
+              </div>
+              <button className="coll-mobile-nav-btn" onClick={() => { navigate('/'); setMobileMenuOpen(false); }}>Shop</button>
+              <button className="coll-mobile-nav-btn" style={{ color: '#5B611D', borderColor: '#C0DFD8', background: '#D5EDE9' }} onClick={() => { navigate('/collections'); setMobileMenuOpen(false); }}>Collections ✦</button>
+              {isLoggedIn && (
+                <button className="coll-mobile-nav-btn" onClick={() => { navigate('/my-orders'); setMobileMenuOpen(false); }}>My Orders</button>
+              )}
+              {user?.role === 'seller' && (
+                <button className="coll-mobile-nav-btn" onClick={() => { navigate('/seller/dashboard'); setMobileMenuOpen(false); }}>Dashboard</button>
+              )}
+              <button className="coll-mobile-nav-btn" onClick={() => { navigate(isLoggedIn ? '/seller/dashboard' : '/login'); setMobileMenuOpen(false); }}>
+                {isLoggedIn ? `👋 ${user?.fullname?.split(' ')[0] || 'Profile'}` : 'Sign In'}
+              </button>
+            </div>
+          )}
         </header>
 
         {/* ═══ HERO BANNER ═══ */}
-        <div style={{ maxWidth: '1280px', margin: '24px auto 0', padding: '0 24px' }}>
-          <div ref={heroRef} style={{
-            position: 'relative', overflow: 'hidden', minHeight: '440px',
-            borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            textAlign: 'center', padding: '40px 24px',
+        <div style={{ maxWidth: '1280px', margin: '16px auto 0', padding: '0 12px' }}>
+          <div ref={heroRef} className="coll-hero-banner" style={{
+            position: 'relative', overflow: 'hidden',
+            borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            textAlign: 'center', padding: '32px 16px',
             boxShadow: '0 20px 40px rgba(42,138,133,0.06)'
           }}>
 
@@ -605,7 +705,7 @@ export default function CollectionsPage() {
         </div>
 
         {/* ═══ MAIN BROWSER SECTION ═══ */}
-        <div id="collection-browser" style={{ maxWidth: '1280px', margin: '0 auto', padding: '40px 24px 80px' }}>
+        <div id="collection-browser" className="coll-browser-section">
 
           {/* ═══ COLLECTION TABS (Capsules) ═══ */}
           <div
@@ -716,13 +816,10 @@ export default function CollectionsPage() {
           ) : (
             <div
               ref={gridRef}
-              style={gridMode === 'grid' ? {
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                gap: '24px',
-              } : {
+              className={gridMode === 'grid' ? 'coll-product-grid' : ''}
+              style={gridMode === 'list' ? {
                 display: 'flex', flexDirection: 'column', gap: '20px',
-              }}
+              } : {}}
             >
               {filteredProducts.map((p, i) => (
                 <CollectionCard
@@ -755,7 +852,7 @@ export default function CollectionsPage() {
               Join the SNITCH monitoring list to get early access to drop cycles, limited archival pieces, and technical data updates.
             </p>
 
-            <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '420px', justifyContent: 'center' }}>
+            <form onSubmit={handleSubscribe} className="coll-newsletter-form">
               <input
                 type="email"
                 required
